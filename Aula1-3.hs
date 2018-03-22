@@ -1,3 +1,5 @@
+-- Made By: Mateus Valgueiro Teixeira (mvt at cin.ufpe.br)
+
 --- Aula 2
 maxi :: Int -> Int -> Int
 maxi n m | n >= m = n
