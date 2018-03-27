@@ -79,3 +79,15 @@ devolver' bd p l = [x| x <- bd, (p,l)/=x]
 qk :: [Int] -> [Int]
 qk [] = []
 qk (a:as) = qk[x| x<-as, x < a] ++ [a] ++ qk[x|x<-as, x>=a]
+
+-------------- Class Exemples
+insert :: [Int] -> Int-> [Int]
+insert [] n = [n]
+insert xs n = [y| y <- xs, y < n] ++ [n] ++ [z| z <- xs, z >= n] 
+
+-- ins n aas@(a:as)
+insSort :: [Int] -> [Int]
+insSort [] = []
+insSort (x:xs) = insert (insSort xs) x 
+
+
