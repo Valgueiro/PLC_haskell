@@ -58,7 +58,6 @@ poliMult as bs = sumEquals allMult 0 (maxCoef allMult)
         indexedBs = zip bs [0..]
         allMult = [(xa * xb, na+nb) | (xa, na) <-indexedAS, (xb, nb) <- indexedBs] 
         
-        
 
 {-- ########################################################## --}
 ----------- Antações da aula de monitoria [Made by Gabi (monitoria)]
