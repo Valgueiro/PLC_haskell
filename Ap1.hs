@@ -1,3 +1,4 @@
+-- Q1:
 kSmallest :: [Int] -> Int -> [Int]
 kSmallest as z =  onlyFirst (qsortscnd (take z organizedAs))
         where
@@ -13,4 +14,30 @@ kSmallest as z =  onlyFirst (qsortscnd (take z organizedAs))
             onlyFirst ((c,d):ss) = [c] ++ onlyFirst ss
 
 
-{- combinations :: [Int] -> [[Int]] -}
+-- Q3:
+isEqual :: [Int] -> [Int] -> Bool  -- ve se duas listas têm os mesmos algarismos
+isEqual [] [] = True
+isEqual [] xs = True
+isEqual xs [] = False
+isEqual (x:xs) ys = length [z| z<-ys, z == x] /= 0 && isEqual xs ys
+
+alreadyCounted :: [Int] -> [[Int]] -> Bool -- checa se alguma lista já existe numa lista de lista baseado em IsEqual
+alreadyCounted a bs = length [z| z<-bs, length a == length z && isEqual z a] /= 0
+
+nonRepeated :: [[Int]] -> [[Int]] -- tira as combinações repetidas se baseando nas duas últimas funções
+nonRepeated [] = []
+nonRepeated [x] = [x]
+nonRepeated (x:xs) | alreadyCounted x counted = counted
+                   | otherwise = [x] ++ counted
+                   where 
+                        counted = nonRepeated xs
+
+combinations :: [Int] -> [[Int]]
+combinations [] = [[]]
+combinations [a] = [[a]] ++ combinations []
+combinations (x:xs) = nonRepeated allCombinations --Retira todas as combinações com repetições
+    where
+        allAnagrams = [take i p ++ [x] ++ drop i p |  p <- combinations xs, i <- [0..length p]] --todos os anagramas
+        allCombinations = combinations [x] ++ combinations xs ++ allAnagrams --pega todas as combinações do termo que eu estou,
+                                                                            -- do resto da cadeia, e os anagramas envolvendo os dois
+        
