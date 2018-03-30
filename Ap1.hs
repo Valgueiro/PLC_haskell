@@ -1,3 +1,5 @@
+----- Made By: Mateus Valgueiro Teixeira [mvt]
+
 -- Q1:
 kSmallest :: [Int] -> Int -> [Int]
 kSmallest as z =  onlyFirst (qsortscnd (take z organizedAs))
@@ -12,6 +14,17 @@ kSmallest as z =  onlyFirst (qsortscnd (take z organizedAs))
 
             onlyFirst [] = []
             onlyFirst ((c,d):ss) = [c] ++ onlyFirst ss
+
+-- Q2:
+isDivisible :: [Int] -> Int -> Bool
+isDivisible [] _ = False
+isDivisible pt@(p:ps) a | a == 1 = True
+                     | mod a p == 0 = isDivisible pt (div a p)
+                     | otherwise = isDivisible ps a
+
+
+composites :: [Int] -> [Int] -> [Int]
+composites ps ns = [x| x <- ns, isDivisible ps x]
 
 
 -- Q3:
