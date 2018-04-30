@@ -53,14 +53,61 @@ tiposDeAcesso str = (findSubStr str "Normal", findSubStr str "Denied")
 -- exemplo:
 -- acessosPorDia logSetembro -----> [(27,2),(26,2),(25,1)] -- 2 acessos dia 27, 2 dia 26 e 1 dia 25
 -- acessosPorDia :: String -> [(Int, Int)]
+shiftChars:: String -> Int -> String
+shiftChars [] _ = []
+shiftChars str 0 = str
+shiftChars (a:as) n = shiftChars as (n-1)
+
+beforeChar :: Char -> String -> String
+beforeChar _ [] = [] 
+beforeChar ch (a:as) | a == ch = []
+				      | otherwise = [a] ++ beforeChar ch as
+
+beforePoint = (\str -> beforeChar ';' str) 
+beforeEnter = (\str -> beforeChar '\n' str) 
+
+iterInLog:: String -> Int -> String
+iterInLog str 0 = beforePoint(str)
+iterInLog str n = iterInLog (shiftChars str (length (beforePoint(str)) + 1)) (n-1)
+
+getDay :: String -> String
+getDay log = iterInLog (head(parseLogToList log)) 0
+
+getHour :: String -> String
+getHour log = iterInLog (head(parseLogToList log)) 1
+
+getStatus :: String -> String
+getStatus log = iterInLog (head(parseLogToList log)) 2
+
+getUser :: String -> String
+getUser log = iterInLog (head(parseLogToList log)) 3
+
 parseLogToList :: String -> [String]
-parseLogToList str = 
+parseLogToList [] = []
+parseLogToList str = [here] ++ parseLogToList(shiftChars (str) (length here + 1))
+					where 
+						here = beforeEnter str
+
+sumEqual :: [(String, String)] -> [(Int, Int)]
+sumEqual [] = []
+sumEqual tot@((x,y):as) = [(read(x), length([b|(a,b)<-tot, a == x]))] ++ sumEqual as
+
+removeEqual :: [(Int, Int)] -> [(Int, Int)]
+removeEqual [] = []
+removeEqual ((x,y):as) = (x,y):(removeEqual [(a,b)| (a,b)<-as, a/=x])
+
+acessosPorDia :: String -> [(Int, Int)]
+acessosPorDia str = removeEqual(sumEqual (logged))
+				where
+					logged = [(getDay x, getStatus x)| x <- parseLogToList str]
 
 -- 3) (2.5) Quantos acessos cada usuário realizou no período?
 -- exemplo:
 -- acessosPorUsuario logSetembro -----> [(208772,1),(155759,3),(188758,1)] -- 3 acessos do usuário 155759 e 1 acesso dos outros
--- acessosPorUsuario :: String -> [(Int, Int)]
-
+acessosPorUsuario :: String -> [(Int, Int)]
+acessosPorUsuario str = removeEqual(sumEqual (users))
+						where
+							 users = [(getUser x, "1")| x <- parseLogToList str]
 
 -- 4) (2.5) escreva a função converte, que transforma os dados armazenados na String para o seguinte tipo de dados:
 type Dia = String
@@ -71,8 +118,15 @@ data LogEntry = Permitido Dia Hora Usuario | Negado Dia Hora Usuario
 -- exemplo:
 -- converte logSetembro -----> [Permitido "2016-09-27" "19:31:52" "208772",Permitido "2016-09-27" "18:12:02" "155759",Permitido "2016-
 -- 09-26" "17:12:02" "155759",Negado "2016-09-26" "16:11:02" "188758",Permitido "2016-09-25" "19:12:02" "155759"]
--- converte :: String -> [LogEntry]
--- função auxiliar para as questões
 
+converte :: String -> [LogEntry]
+converte str = converte' (parseLogToList str)	
+		where
+			converte' [] = []
+			converte' (a:as) | (getStatus a) == "Normal" = (Permitido (getDay a) (getHour a) (getUser a)):converte' as
+							 | otherwise = (Negado (getDay a) (getHour a) (getUser a)):converte' as
+
+
+-- função auxiliar para as questões
 strToInt :: String -> Int
 strToInt str = read str
