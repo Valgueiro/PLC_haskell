@@ -62,7 +62,7 @@ beforeChar :: Char -> String -> String
 beforeChar _ [] = [] 
 beforeChar ch (a:as) | a == ch = []
 				      | otherwise = [a] ++ beforeChar ch as
-
+-- podemos usar takewhile (\= ';') ...
 beforePoint = (\str -> beforeChar ';' str) 
 beforeEnter = (\str -> beforeChar '\n' str) 
 
